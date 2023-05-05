@@ -21,7 +21,7 @@ class SetlistGen:
         return setlist, acoustic
 
     @staticmethod
-    def get_album_setlist(album):
+    def get_album_setlist(album, previous_setlist):
         song_dict = {}
         for song in album:
             priority = song['priority']
@@ -34,7 +34,12 @@ class SetlistGen:
         random_songs = []
         for songs in song_dict.values():
             random_song = random.choice(songs)
+            while random_song['song'] in previous_setlist:
+                random_song = random.choice(songs)
             random_songs.append(random_song)
+
+        if not random_songs:
+            raise ValueError('No songs found in album')
 
         return random_songs
 
@@ -74,6 +79,15 @@ class SetlistGen:
         setlist[middle_index:middle_index] = acoustic_setlist
 
         return setlist
+
+    @staticmethod
+    def write_setlists(setlists):
+        with open('setlists.txt', 'w') as f:
+            for i, inner_list in enumerate(setlists, start=1):
+                f.write(f'---{i}---\n')
+                for j, item in enumerate(inner_list, start=1):
+                    f.write(f'{j}.{item.upper()}\n')
+                f.write('\n')
 
 
 setlist_gen = SetlistGen()
