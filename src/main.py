@@ -1,5 +1,3 @@
-import random
-
 from controllers import albums, setlist_gen
 
 
@@ -36,13 +34,6 @@ def main():
 
     finished_setlist = setlist_gen.merge_setlists(
             current_album_setlist, previous_albums_setlist, acoustic_setlist)
-
-    print(current_album_setlist)
-    print(previous_albums_setlist)
-    print(acoustic_setlist)
-    print(len(current_album_setlist))
-    print(len(previous_albums_setlist))
-    print(finished_setlist)
 
 
 if __name__ == "__main__":
