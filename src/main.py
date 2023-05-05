@@ -22,13 +22,14 @@ def define_current_album():
     return setlist, acoustic
 
 
-def define_previous_albums():
+def define_previous_albums(previous_setlist):
     albums_list = [albums.BLOOD_SHOT_EYES, albums.GOING_INSANE,
                    albums.NOTHING_TO_SAY, albums.BREATH_ONCE_MORE]
     gross_setlist = []
 
     for album in albums_list:
-        gross_setlist.append(setlist_gen.get_album_setlist(album))
+        gross_setlist.append(setlist_gen.get_album_setlist(
+            album, previous_setlist))
 
     return gross_setlist
 
@@ -41,31 +42,47 @@ def main():
     current_album_setlist, current_album_acoustic = define_current_album()
     log.debug(f'Current album setlist: {current_album_setlist}')
     log.debug(f'Current album acoustic: {current_album_acoustic}')
+    log.info('----------------------')
 
-    # Call define_previous_albums() function and log the result
-    gross_setlist = define_previous_albums()
-    log.debug(f'Gross setlist: {gross_setlist}')
+    all_setlists = []
+    previous_setlist = []
+    show_amount = 61
 
-    # Call split_previous_songs() function and log the result
-    previous_albums_setlist, acoustic_setlist = \
-        setlist_gen.split_previous_songs(gross_setlist, current_album_acoustic)
-    log.debug(f'Previous albums setlist: {previous_albums_setlist}')
-    log.debug(f'Acoustic setlist: {acoustic_setlist}')
+    while show_amount > 0:
+        # Call define_previous_albums() function and log the result
+        gross_setlist = define_previous_albums(previous_setlist)
+        log.debug(f'Gross setlist: {gross_setlist}')
 
-    # Call define_previous_songs_setlist_length() function and log the result
-    setlist_gen.define_previous_songs_setlist_length(
-        previous_albums_setlist, current_album_setlist)
-    log.info('Setlist length defined')
+        # Call split_previous_songs() function and log the result
+        previous_albums_setlist, acoustic_setlist = \
+            setlist_gen.split_previous_songs(
+                gross_setlist, current_album_acoustic)
+        log.debug(f'Previous albums setlist: {previous_albums_setlist}')
+        log.debug(f'Acoustic setlist: {acoustic_setlist}')
 
-    # Call merge_setlists() function and log the result
-    finished_setlist = setlist_gen.merge_setlists(
-            current_album_setlist, previous_albums_setlist, acoustic_setlist)
-    log.debug(f'Finished setlist: {finished_setlist}')
+        # Call define_previous_songs_setlist_length()
+        # function and log the result
+        setlist_gen.define_previous_songs_setlist_length(
+            previous_albums_setlist, current_album_setlist)
+        log.info('Setlist length defined')
+
+        # Call merge_setlists() function and log the result
+        finished_setlist = \
+            setlist_gen.merge_setlists(
+                current_album_setlist, previous_albums_setlist,
+                acoustic_setlist)
+        log.debug(f'Finished setlist: {finished_setlist}')
+
+        previous_setlist = finished_setlist
+        all_setlists.append(finished_setlist)
+
+        log.info('----------------------')
+        show_amount -= 1
+
+    setlist_gen.write_setlists(all_setlists)
 
     # Log the end of the function
     log.info('Finished main() function')
-
-    print(len(finished_setlist))
 
 
 if __name__ == "__main__":
