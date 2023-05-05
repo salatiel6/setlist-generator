@@ -56,7 +56,7 @@ class SetlistGen:
     @staticmethod
     def define_previous_songs_setlist_length(
             previous_albums_setlist, current_album_setlist):
-        while len(previous_albums_setlist) > len(current_album_setlist):
+        while len(previous_albums_setlist) >= len(current_album_setlist):
             index = random.randint(0, len(previous_albums_setlist) - 1)
             del previous_albums_setlist[index]
 
@@ -66,7 +66,9 @@ class SetlistGen:
         setlist = [
             val for pair in zip(
                 current_album_setlist, previous_albums_setlist)
-            for val in pair]
+            for val in pair] + \
+                current_album_setlist[len(previous_albums_setlist):] + \
+                previous_albums_setlist[len(current_album_setlist):]
 
         middle_index = len(setlist) // 2
         setlist[middle_index:middle_index] = acoustic_setlist
