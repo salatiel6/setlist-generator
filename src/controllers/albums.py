@@ -16,7 +16,7 @@ class Albums:
 
     @staticmethod
     def get_album(album):
-        return db[album].find()
+        return list(db[album].find())
 
 
 albums = Albums()
